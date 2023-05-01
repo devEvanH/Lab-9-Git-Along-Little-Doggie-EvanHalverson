@@ -26,6 +26,7 @@ public class CoolCollection<E> {
         return this.pieces.remove(pos);
     }
 
+    // I don't understand if this even correct or not
     public Iterator<E> iterator() {
         if (this.iterateRandomly) {
             return new RandomIterator<E>(this.pieces);
@@ -40,42 +41,32 @@ public class CoolCollection<E> {
 
     // How in the world do I use the iterator interface for this
      private class RandomIterator<T> implements Iterator<T> {
+        private ArrayList<T> elements;
         private Random random;
-        private int[] indexOrder;
-        private int currentIndex; 
-
-       // Instead of doing rand in constructor do I still do the count but store each unique num and add it to the array each time and then use iterator that way
-        public RandomIterator(int seed) {
-            this.iterator = pieces.iterator();
+        private Set<Integer> usedIndexes;
+    
+        public RandomIterator(ArrayList<T> elements, long seed) {
+            this.elements = elements;
             this.random = new Random(seed);
-            currentIndex = 0;
-            indexOrder = new int[pieces.size() - 1];
-            indexOrder[0] = random.nextInt(pieces.size());
-      
-            int i = 1;
-            while (i < pieces.size()) {
-              int randIndex = random.nextInt(pieces.size());
-              while(j <= i && randIndex != indexOrder[j]) {
-                j++;
-              }
-              if(j > i) {
-                indexOrder[j] = randIndex;
-                i++;
-              } 
-            }
+            this.usedIndexes = new HashSet<Integer>();
         }
-
+    
         public boolean hasNext() {
-            return (currentIndex < pieces.size() - 1);
+            return usedIndexes.size() < elements.size();
         }
-
+    
         public T next() {
             if (!hasNext()) {
                 throw new IllegalStateException("No more elements to iterate");
             }
-            T elemnt = pieces(indexOrder[currentIndex]);
-            currentIndex++;
-            return element;
+    
+            int index = random.nextInt(elements.size());
+            while (usedIndexes.contains(index)) {
+                index = random.nextInt(elements.size());
+            }
+    
+            usedIndexes.add(index);
+            return elements.get(index);
         }
 
      }
