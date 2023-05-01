@@ -4,6 +4,7 @@ import java.util.*;
 public class CoolCollection<E> {
     private ArrayList<E> pieces;
     private boolean iterateRandomly;
+    
 
     public CoolCollection(boolean iterateRandomly) {
         this.pieces = new ArrayList<E>();
@@ -26,65 +27,67 @@ public class CoolCollection<E> {
         return this.pieces.remove(pos);
     }
 
-    // I don't understand if this even correct or not
+    
     public Iterator<E> iterator() {
         if (this.iterateRandomly) {
-            return new RandomIterator<E>(this.pieces);
+            return new RandomIterator(1234567);
         } else {
-            return new WellBehavedIterator<E>(this.pieces);
+            return new WellBehavedIterator();
         }
     }
 
     public int size() {
         return this.pieces.size();
     }
-
-    // How in the world do I use the iterator interface for this
-     private class RandomIterator<T> implements Iterator<T> {
-        private ArrayList<T> elements;
-        private Random random;
-        private Set<Integer> usedIndexes;
-    
-        public RandomIterator(ArrayList<T> elements, long seed) {
-            this.elements = elements;
-            this.random = new Random(seed);
-            this.usedIndexes = new HashSet<Integer>();
-        }
-    
-        public boolean hasNext() {
-            return usedIndexes.size() < elements.size();
-        }
-    
-        public T next() {
-            if (!hasNext()) {
-                throw new IllegalStateException("No more elements to iterate");
-            }
-    
-            int index = random.nextInt(elements.size());
-            while (usedIndexes.contains(index)) {
-                index = random.nextInt(elements.size());
-            }
-    
-            usedIndexes.add(index);
-            return elements.get(index);
-        }
-
-     }
   
-  private class WellBehavedIterator<T> implements Iterator<T> {
-    private Iterator<T> iterator;
+    private class RandomIterator implements Iterator<E> {
+    private Random random;
+    private Set<Integer> usedIndexes;
+
+    public RandomIterator(int seed) {
+        this.random = new Random(seed);
+        this.usedIndexes = new HashSet<Integer>();
+    }
+
+    public boolean hasNext() {
+        return usedIndexes.size() < pieces.size();
+    }
+
+    public E next() {
+        if (!hasNext()) {
+            throw new IllegalStateException("No more elements to iterate");
+        }
+
+        int index = random.nextInt(pieces.size());
+        while (usedIndexes.contains(index)) {
+            index = random.nextInt(pieces.size());
+        }
+
+        usedIndexes.add(index);
+        return pieces.get(index);
+    }
+  }
+
+  
+  private class WellBehavedIterator implements Iterator<E> {
+    private Iterator<E> iterator;
+
+    public WellBehavedIterator() {
+        this.iterator = pieces.iterator(); 
+    }
 
     public boolean hasNext() {
         return this.iterator.hasNext();
     }
 
-    public T next() {
+    public E next() {
         if (!hasNext()) {
             throw new IllegalStateException("No more elements to iterate");
         }
-        T element = this.iterator.next();
+        E element = this.iterator.next();
         return element;
     }
   }
+
 
 }
