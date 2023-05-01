@@ -1,6 +1,5 @@
 package gitalong;
-import java.util.ArrayList;
-import java.util.Iterator;
+import java.util.*;
 
 public class CoolCollection<E> {
     private ArrayList<E> pieces;
@@ -38,3 +37,45 @@ public class CoolCollection<E> {
     public int size() {
         return this.pieces.size();
     }
+
+     private class RandomIterator<T> implements Iterator<T> {
+        private Random random;
+        private int[] indexOrder;
+        private int currentIndex; 
+
+        public RandomIterator(int seed) {
+            this.iterator = pieces.iterator();
+            this.random = new Random(seed);
+            currentIndex = 0;
+            indexOrder = new int[pieces.size() - 1];
+            indexOrder[0] = random.nextInt(pieces.size());
+      
+            int i = 1;
+            while (i < pieces.size()) {
+              int randIndex = random.nextInt(pieces.size());
+              while(j <= i && randIndex != indexOrder[j]) {
+                j++;
+              }
+              if(j > i) {
+                indexOrder[j] = randIndex;
+                i++;
+              } 
+            }
+        }
+
+        public boolean hasNext() {
+            return (currentIndex < pieces.size() - 1);
+        }
+
+        public T next() {
+            if (!hasNext()) {
+                throw new IllegalStateException("No more elements to iterate");
+            }
+            T elemnt = pieces(indexOrder[currentIndex]);
+            currentIndex++;
+            return element;
+        }
+
+     }
+
+}
